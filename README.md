@@ -10,8 +10,4 @@ uv run fastapi dev main.py
 
 Then check the Web app at http://127.0.0.1:8000/
 
-or you can run the code in the terminal (You don't need to uv)
-
-just run the code of the file gt.py
-
-check 
+or you can run the code in the terminal (You don't need to uv) just run the code of the file gt.py
