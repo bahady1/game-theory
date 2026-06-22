@@ -1,0 +1,10 @@
+[project]
+name = "ha-2"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.138.0",
+    "gambit>=0.1.6",
+    "jinja2>=3.1.6",
+    "pygambit>=16.6.0",
+]

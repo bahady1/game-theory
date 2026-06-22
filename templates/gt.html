@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Theory Solver</title>
+</head>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h2 {
+    color: #2c3e50;
+}
+
+h3 {
+    color: #34495e;
+}
+
+input[type="number"] {
+    width: 70px;
+    padding: 6px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#table-wrapper {
+    margin-top: 30px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+}
+
+td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 15px;
+}
+
+td:first-child {
+    font-weight: bold;
+    background-color: #f1f1f1;
+}
+
+#solve-btn {
+    margin-top: 25px;
+}
+
+#result {
+    margin-top: 40px;
+}
+
+.equilibrium {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.player {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #fafafa;
+    border-left: 5px solid #4CAF50;
+    border-radius: 5px;
+}
+
+.player ul {
+    margin-top: 10px;
+}
+
+.player li {
+    margin-bottom: 8px;
+}
+
+.profile {
+    background-color: #eef6ff;
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-family: monospace;
+}
+
+.payoff {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin: 30px 0;
+}
+</style>
+<body>
+
+    <h1>Game Theory - Payoff Matrix</h1>
+
+    <div>
+
+        <label>
+            Number of strategies for Player 1:
+        </label>
+
+        <input
+            type="number"
+            id="p1_strategies"
+            min="1">
+
+        <br><br>
+
+        <label>
+            Number of strategies for Player 2:
+        </label>
+
+        <input
+            type="number"
+            id="p2_strategies"
+            min="1">
+
+        <br><br>
+
+        <button onclick="buildTable()">
+            Generate Payoff Matrix
+        </button>
+
+    </div>
+
+    <br>
+
+    <div id="table-wrapper"></div>
+
+    <br>
+
+    <button
+        id="solve-btn"
+        onclick="solveGame()"
+        style="display:none">
+
+        Solve Game
+
+    </button>
+
+    <br><br>
+
+    <div id="result"></div>
+
+
+<script>
+
+function buildTable() {
+
+    document.getElementById("result").innerHTML = "";
+
+    const p1Count =
+        parseInt(document.getElementById("p1_strategies").value);
+
+    const p2Count =
+        parseInt(document.getElementById("p2_strategies").value);
+
+    let tableHtml = `
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Player 1 \\ Player 2</th>
+    `;
+
+    for (let j = 0; j < p2Count; j++) {
+
+        tableHtml += `
+            <th>
+                Strategy ${j + 1}
+            </th>
+        `;
+    }
+
+    tableHtml += `
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    for (let i = 0; i < p1Count; i++) {
+
+        tableHtml += `
+            <tr>
+                <td>
+                    Strategy ${i + 1}
+                </td>
+        `;
+
+        for (let j = 0; j < p2Count; j++) {
+
+            tableHtml += `
+                <td>
+
+                    P1
+
+                    <input
+                        type="number"
+                        id="p1_${i}_${j}"
+                        value="0">
+
+                    <br><br>
+
+                    P2
+
+                    <input
+                        type="number"
+                        id="p2_${i}_${j}"
+                        value="0">
+
+                </td>
+            `;
+        }
+
+        tableHtml += "</tr>";
+    }
+
+    tableHtml += `
+        </tbody>
+        </table>
+    `;
+
+    document.getElementById("table-wrapper").innerHTML = tableHtml;
+
+    document.getElementById("solve-btn").style.display = "block";
+}
+
+
+
+async function solveGame() {
+
+    const p1Count =
+        parseInt(document.getElementById("p1_strategies").value);
+
+    const p2Count =
+        parseInt(document.getElementById("p2_strategies").value);
+
+    let matrix = [];
+
+    for (let i = 0; i < p1Count; i++) {
+
+        matrix.push([]);
+
+        for (let j = 0; j < p2Count; j++) {
+
+            let payoff1 = parseFloat(
+                document.getElementById(`p1_${i}_${j}`).value
+            );
+
+            let payoff2 = parseFloat(
+                document.getElementById(`p2_${i}_${j}`).value
+            );
+
+            matrix[i].push([
+                payoff1,
+                payoff2
+            ]);
+        }
+    }
+
+
+    const response = await fetch(
+        "/game_solve",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                matrix: matrix
+            })
+        }
+    );
+
+    const data = await response.json();
+
+
+    let resultHtml = "";
+
+    resultHtml += `
+        <h2>Solutions</h2>
+
+        <h3>
+            Method: ${data.method}
+        </h3>
+
+        <h3>
+            Number of Equilibria:
+            ${data.number_of_equilibria}
+        </h3>
+    `;
+
+
+    for (const equilibrium of data.equilibria) {
+
+        resultHtml += `
+            <hr>
+
+            <h2>
+                Equilibrium ${equilibrium.equilibrium_number}
+            </h2>
+        `;
+
+
+        if (equilibrium.profile) {
+
+            resultHtml += `
+                <p>
+
+                    <strong>
+                        Mixed Strategy Profile:
+                    </strong>
+
+                    ${equilibrium.profile}
+
+                </p>
+            `;
+        }
+
+
+        for (const player of equilibrium.players) {
+
+            resultHtml += `
+                <h3>
+                    ${player.player}
+                </h3>
+
+                <ul>
+            `;
+
+
+            for (const [strategy, probability]
+                 of Object.entries(player.strategies)) {
+
+                resultHtml += `
+                    <li>
+
+                        Probability of Strategy
+                        ${strategy} :
+
+                        ${probability}
+
+                    </li>
+                `;
+            }
+
+
+            resultHtml += `
+                </ul>
+
+                <p>
+
+                    <strong>
+                        Expected Payoff:
+                    </strong>
+
+                    ${player.payoff}
+
+                </p>
+            `;
+        }
+    }
+
+
+    document.getElementById("result").innerHTML = resultHtml;
+}
+
+</script>
+
+</body>
+</html>
