@@ -10,7 +10,7 @@ class GameData(BaseModel):
     matrix: list
 
 
-@app.get("/")
+@app.get("/game-theory-PA2")
 async def home():
     with open("templates/gt.html", "r", encoding="utf-8") as f:
         return HTMLResponse(f.read())
