@@ -16,6 +16,12 @@ async def home():
         return HTMLResponse(f.read())
 
 
+@app.get("/")
+async def home():
+    with open("templates/buy.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read())
+
+
 @app.post("/game_solve")
 async def game_solve(data: GameData):
 
