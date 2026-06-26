@@ -1,11 +1,285 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>bahady.com - For Sale</title>
-  <style>
-    body, html { margin: 0; height: 100%; }
-    iframe { width: 100%; height: 100vh; border: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bahady.com — For Sale</title>
+<style>
+  :root {
+    --ink: #0E1A2B;
+    --ink-line: #24344A;
+    --parchment: #F6F1E7;
+    --parchment-dim: #EDE6D6;
+    --gold: #C9A24B;
+    --gold-bright: #E0BC6E;
+    --slate: #9AA7B8;
+    --slate-dim: #6B7A8E;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    background-image:
+      radial-gradient(ellipse 800px 500px at 50% -10%, rgba(201,162,75,0.10), transparent),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 620px;
+  }
+
+  .eyebrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .eyebrow-row .line {
+    height: 1px;
+    width: 36px;
+    background: var(--ink-line);
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+  }
+
+  .card {
+    position: relative;
+    background: var(--parchment);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 56px 48px 44px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 30px 60px -20px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(201,162,75,0.15);
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(14,26,43,0.12);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .seal {
+    position: absolute;
+    top: 22px;
+    right: 26px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(155deg, var(--gold-bright), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(9deg);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  }
+
+  .seal span {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.25;
+    font-family: Georgia, "Iowan Old Style", serif;
+  }
+
+  .domain-name {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    font-size: clamp(34px, 6vw, 50px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+    line-height: 1.08;
+    max-width: 80%;
+  }
+
+  .tagline {
+    font-size: 15.5px;
+    color: var(--slate-dim);
+    line-height: 1.6;
+    margin: 0 0 32px;
+    max-width: 92%;
+  }
+
+  .ledger {
+    border-top: 1px dashed rgba(14,26,43,0.22);
+    border-bottom: 1px dashed rgba(14,26,43,0.22);
+    padding: 20px 0;
+    margin-bottom: 30px;
+  }
+
+  .ledger-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 7px 0;
+    font-size: 14.5px;
+  }
+
+  .ledger-row .label {
+    color: var(--slate-dim);
+  }
+
+  .ledger-row .value {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .ledger-row .value.price {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    color: var(--ink);
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    text-align: center;
+    padding: 15px 20px;
+    border-radius: 3px;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    min-width: 160px;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--parchment);
+  }
+
+  .btn-primary:hover {
+    background: #1A2C46;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px -8px rgba(14,26,43,0.5);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid rgba(14,26,43,0.28);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--ink);
+    transform: translateY(-1px);
+  }
+
+  .contact-row {
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 4px 2px;
+    border-bottom: 1px solid rgba(14,26,43,0.3);
+    transition: border-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .contact-link:hover {
+    border-color: var(--ink);
+    opacity: 0.75;
+  }
+
+  .contact-link svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .note {
+    margin-top: 22px;
+    font-size: 12.5px;
+    color: var(--slate-dim);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .note a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: rgba(14,26,43,0.3);
+  }
+
+  .footer-row {
+    margin-top: 26px;
+    text-align: center;
+  }
+
+  .footer-row a {
+    color: var(--slate);
+    font-size: 12.5px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(154,167,184,0.3);
+    padding-bottom: 1px;
+  }
+
+  .footer-row a:hover {
+    color: var(--gold-bright);
+    border-bottom-color: var(--gold-bright);
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 44px 26px 36px; }
+    .domain-name { max-width: 100%; }
+    .tagline { max-width: 100%; }
+    .actions { flex-direction: column; }
+    .btn { min-width: 0; }
+    .seal { width: 54px; height: 54px; top: 16px; right: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: none; }
+  }
+
+  a:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--gold-bright);
+    outline-offset: 2px;
+  }
+</style>
 </head>
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJCNX78D7F"></script>
@@ -17,6 +291,56 @@
   gtag('config', 'G-GJCNX78D7F');
 </script>
 <body>
-  <iframe src="https://www.afternic.com/domain/bahady.com"></iframe>
+
+<div class="wrap">
+
+  <div class="eyebrow-row">
+    <div class="line"></div>
+    <div class="eyebrow">Domain Listing</div>
+    <div class="line"></div>
+  </div>
+
+  <div class="card">
+    <div class="seal"><span>For<br>Sale</span></div>
+
+    <h1 class="domain-name">bahady.com</h1>
+    <p class="tagline">A short, memorable .com domain — available to acquire and make your own. Currently listed through Afternic's secure marketplace.</p>
+
+    <div class="ledger">
+      <div class="ledger-row">
+        <span class="label">Asking price</span>
+        <span class="value price">$2,799 USD</span>
+      </div>
+      <div class="ledger-row">
+        <span class="label">Listing status</span>
+        <span class="value">Active</span>
+      </div>
+      <div class="ledger-row">
+        <span class="label">Transfer</span>
+        <span class="value">Secure escrow via Afternic / GoDaddy</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="https://checkoutLink.godaddy.com/lander/bahady.com?trackingId=5599&itc=am_GDCart_Afternicfos_BIN" target="_blank" rel="noopener">Buy now — $2,799</a>
+      <a class="btn btn-secondary" href="https://www.afternic.com/domain/bahady.com" target="_blank" rel="noopener">Make an offer</a>
+    </div>
+
+    <p class="note">Clicking either option takes you to the official Afternic listing to complete your purchase securely. Payment is handled entirely by Afternic / GoDaddy — this site never collects payment information.</p>
+
+    <div class="contact-row">
+      <a class="contact-link" href="mailto:bahadywork@gmail.com?subject=Interested%20in%20bahady.com&body=Hi%2C%0A%0AI%27m%20interested%20in%20bahady.com.%20Here%27s%20a%20bit%20about%20my%20offer%2Fplans%3A%0A%0A">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        Prefer email? Contact the owner directly
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-row">
+    <a href="/game">Looking for the game instead? →</a>
+  </div>
+
+</div>
+
 </body>
 </html>
