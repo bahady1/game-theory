@@ -1,3 +1,5 @@
+## How To Run The Code
+
 To run the code should have uv already install or just run this command "pip install uv"
 
 then run those commands
@@ -8,8 +10,12 @@ uv run fastapi dev main.py
 
 Then check the Web app at http://127.0.0.1:8000/
 
-or you can run the code in the terminal (You don't need to uv)
+Or you can run the code in the terminal (You don't need to uv) just run the code of the file gt.py
 
+<<<<<<< HEAD
 just run the code of the file gt.py
 
 Visit https://bahady.com/game-theory-PA2 for the Web App
+=======
+Visit https://bahady.com/game-theory-PA2 for the Web App
+>>>>>>> dba42713c774ff8ad7f651836120135fb3a17cc0
