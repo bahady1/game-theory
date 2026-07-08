@@ -15,6 +15,10 @@ async def home():
     with open("templates/gt.html", "r", encoding="utf-8") as f:
         return HTMLResponse(f.read())
 
+@app.get("/quiz")
+async def quiz():
+    with open("templates/ml_quiz.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read())
 
 @app.post("/game_solve")
 async def game_solve(data: GameData):

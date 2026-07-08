@@ -12,4 +12,4 @@ or you can run the code in the terminal (You don't need to uv)
 
 just run the code of the file gt.py
 
-check 
+Visit https://bahady.com/game-theory-PA2 for the Web App
