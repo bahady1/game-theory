@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🧠 Neural Networks Quiz – 50 mixed questions</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧠 NN Practice · 50 shuffled questions</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,7 +11,7 @@
       padding: 0;
     }
     body {
-      background: #f4f7fc;
+      background: #f0f5fa;
       font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
       padding: 2rem 1rem;
       display: flex;
@@ -37,19 +37,23 @@
       margin-bottom: 0.25rem;
     }
     .subhead {
-      color: #3a5a6e;
+      color: #1d4d6b;
       margin-bottom: 2rem;
       border-left: 4px solid #2b7a9e;
       padding-left: 1.2rem;
       font-weight: 400;
-      font-size: 1.05rem;
+      font-size: 1rem;
       background: #eaf1f8;
       border-radius: 0 20px 20px 0;
       padding: 0.7rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
     }
     .question-card {
       background: #ffffff;
-      border: 1px solid #e2ebf3;
+      border: 1px solid #dce8f2;
       border-radius: 24px;
       padding: 1.6rem 1.8rem;
       margin-bottom: 1.8rem;
@@ -58,7 +62,6 @@
     }
     .question-card:hover {
       border-color: #b6d2e5;
-      box-shadow: 0 8px 16px -8px rgba(0, 60, 90, 0.08);
     }
     .q-header {
       display: flex;
@@ -83,7 +86,6 @@
       font-size: 0.75rem;
       padding: 0.2rem 1rem;
       border-radius: 30px;
-      letter-spacing: 0.2px;
     }
     .q-text {
       font-size: 1.2rem;
@@ -96,7 +98,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
-      margin: 0.5rem 0 0.2rem;
+      margin: 0.5rem 0 0.8rem;
     }
     .option-item {
       display: flex;
@@ -106,12 +108,25 @@
       padding: 0.7rem 1.2rem;
       border-radius: 60px;
       border: 1px solid #e4edf5;
-      transition: 0.08s linear;
-      cursor: default;
+      cursor: pointer;
+      transition: 0.08s ease;
     }
     .option-item:hover {
       background: #eef4fa;
-      border-color: #bed7ea;
+      border-color: #aec8dd;
+    }
+    .option-item.selected {
+      background: #d4e6f7;
+      border-color: #2a7aa8;
+      box-shadow: 0 0 0 2px #b0d0e8;
+    }
+    .option-item.correct-reveal {
+      background: #c8e6d9;
+      border-color: #1d7a5e;
+    }
+    .option-item.wrong-reveal {
+      background: #f8dddd;
+      border-color: #b34a4a;
     }
     .option-letter {
       font-weight: 700;
@@ -124,24 +139,31 @@
       justify-content: center;
       border-radius: 40px;
       font-size: 0.9rem;
+      flex-shrink: 0;
     }
     .option-text {
       color: #1d3a4e;
       font-weight: 450;
       font-size: 1rem;
     }
-    .answer-badge {
+    .feedback-area {
       margin-top: 1rem;
-      background: #dff0fa;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      min-height: 2.4rem;
+    }
+    .feedback-badge {
+      background: #ecf3fa;
       border-radius: 40px;
-      padding: 0.4rem 1.2rem;
-      display: inline-block;
-      font-size: 0.85rem;
+      padding: 0.3rem 1.2rem;
+      font-size: 0.9rem;
       font-weight: 500;
       color: #005073;
-      border: 1px solid #bcd6e9;
+      border: 1px solid #bed7ea;
     }
-    .answer-badge strong {
+    .feedback-badge strong {
       background: #1c5b7a;
       color: white;
       padding: 0.1rem 0.9rem;
@@ -150,16 +172,15 @@
       font-weight: 600;
       font-size: 0.8rem;
     }
-    .footer-note {
-      margin-top: 2.5rem;
-      color: #2b5d7a;
-      font-size: 0.95rem;
-      text-align: center;
-      border-top: 1px solid #dae6f0;
-      padding-top: 1.8rem;
-      background: #f4faff;
-      border-radius: 60px;
-      padding: 1.2rem;
+    .feedback-badge.correct {
+      background: #d4eddd;
+      border-color: #2f8f6b;
+      color: #0b4a30;
+    }
+    .feedback-badge.wrong {
+      background: #f7dbdb;
+      border-color: #b75858;
+      color: #752a2a;
     }
     .btn-reset {
       background: none;
@@ -171,50 +192,77 @@
       cursor: pointer;
       transition: 0.15s;
       font-size: 0.9rem;
-      margin-top: 0.3rem;
     }
     .btn-reset:hover {
       background: #d3e4f0;
       border-color: #7fa6c0;
     }
-    .shuffle-badge {
-      background: #e1edf6;
-      border-radius: 60px;
+    .btn-small {
+      background: #e6eff6;
+      border: 1px solid #b8cfdf;
       padding: 0.2rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      color: #1c5570;
+      cursor: pointer;
       font-size: 0.8rem;
-      color: #1c4b63;
+      transition: 0.1s;
+    }
+    .btn-small:hover {
+      background: #d2e2ef;
+    }
+    .footer-note {
+      margin-top: 2.5rem;
+      color: #2b5d7a;
+      font-size: 0.95rem;
+      text-align: center;
+      border-top: 1px solid #dae6f0;
+      padding-top: 1.8rem;
+      background: #f4faff;
+      border-radius: 60px;
+      padding: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      align-items: center;
+    }
+    .progress-stats {
+      font-weight: 500;
+      color: #12445f;
     }
     @media (max-width: 600px) {
       .quiz-container { padding: 1.2rem; }
       .q-text { font-size: 1rem; }
       .option-item { padding: 0.5rem 1rem; }
-      .q-header { gap: 8px; }
     }
   </style>
 </head>
 <body>
 <div class="quiz-container" id="app">
   <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-    <h1>🧠 NN1 · 50</h1>
-    <span class="shuffle-badge">⚡ shuffled questions & options</span>
+    <h1>🧠 NN1 · practice</h1>
+    <span style="background: #e1edf6; border-radius: 60px; padding: 0.2rem 1.4rem; font-size: 0.8rem; color:#1c4b63;">shuffled · click to answer</span>
   </header>
   <div class="subhead">
-    ⚡ each question displays the correct answer · order randomized
+    <span>⚡ select an option · see if you're right</span>
+    <span style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap;">
+      <button class="btn-small" id="resetAllBtn">↺ reset all</button>
+      <button class="btn-small" id="reshuffleBtn">🔀 reshuffle</button>
+    </span>
   </div>
 
   <div id="quizRoot"></div>
 
   <div class="footer-note">
-    <span>✅ all 50 questions from the catalog · options and question order mixed</span>
-    <div style="margin-top: 10px;">
-      <button class="btn-reset" id="reshuffleBtn">🔀 reshuffle quiz</button>
-    </div>
+    <span class="progress-stats" id="statsDisplay">✅ 0 / 50 answered</span>
+    <span style="color:#1b5470;">• correct answers hidden until you choose</span>
   </div>
 </div>
 
 <script>
   (function() {
-    // ----- raw question data (copied from catalog, 50 items) -----
+    // ---------- raw data (50 questions) ----------
     const RAW_QUESTIONS = [
       { id: "NN1-001", topic: "Machine learning definition", question: "Which statement best captures the standard experience-task-performance definition of machine learning?", options: { A: "A program learns if it stores more data than before.", B: "A program learns from experience E with respect to a task T and performance measure P if performance on T, measured by P, improves with E.", C: "A program learns if it can execute hand-written rules more quickly over time.", D: "A program learns if it can solve any task without examples or feedback." }, correct: "B" },
       { id: "NN1-002", topic: "Machine learning paradigm", question: "In the usual paradigm-shift description of machine learning, what replaces writing all rules by hand?", options: { A: "The system infers rules or model parameters from data and desired outputs.", B: "The system ignores the data and searches directly for labels.", C: "The programmer writes a larger rule base before training.", D: "The system chooses random rules and keeps them fixed." }, correct: "A" },
@@ -277,7 +325,7 @@
       return arr;
     }
 
-    // shuffle options inside a question (returns new object)
+    // shuffle options inside a question, return new object, keep correct mapping
     function shuffleOptions(q) {
       const entries = Object.entries(q.options);
       const shuffled = shuffleArray([...entries]);
@@ -289,28 +337,40 @@
         newOpts[newKey] = text;
         if (key === q.correct) correctLetter = newKey;
       });
-      // ensure correct answer maps to new letter
       return { ...q, options: newOpts, correct: correctLetter };
     }
 
-    // prepare full shuffled deck: shuffle order of questions, and inside each shuffle options
+    // build full shuffled deck: question order + options inside
     function buildShuffledDeck() {
-      // deep copy
       const deck = RAW_QUESTIONS.map(q => ({ ...q, options: { ...q.options } }));
-      // shuffle question order
       shuffleArray(deck);
-      // shuffle options inside each question
       return deck.map(q => shuffleOptions(q));
     }
 
-    // render
-    function render(deck) {
-      const root = document.getElementById('quizRoot');
+    // ----- state -----
+    let currentDeck = buildShuffledDeck();
+    // answerState: map index -> { selected: 'A'|null, revealed: false }
+    let answerState = currentDeck.map(() => ({ selected: null, revealed: false }));
+
+    // DOM refs
+    const root = document.getElementById('quizRoot');
+    const statsDisplay = document.getElementById('statsDisplay');
+
+    // update stats
+    function updateStats() {
+      const answered = answerState.filter(s => s.selected !== null).length;
+      statsDisplay.textContent = `✅ ${answered} / 50 answered`;
+    }
+
+    // render everything
+    function render() {
       root.innerHTML = '';
-      deck.forEach((q, idx) => {
+      currentDeck.forEach((q, idx) => {
+        const state = answerState[idx];
         const card = document.createElement('div');
         card.className = 'question-card';
 
+        // header
         const header = document.createElement('div');
         header.className = 'q-header';
         header.innerHTML = `
@@ -319,51 +379,118 @@
           <span style="margin-left: auto; color: #2d657d; font-size:0.8rem; background:#e7f0f7; padding:0.1rem 1rem; border-radius:30px;">#${idx+1}</span>
         `;
 
+        // question text
         const qText = document.createElement('div');
         qText.className = 'q-text';
         qText.textContent = q.question;
 
+        // options
         const optionsDiv = document.createElement('div');
         optionsDiv.className = 'options-grid';
-
         const letters = ['A', 'B', 'C', 'D'];
+
         letters.forEach(letter => {
           const optText = q.options[letter];
           if (optText === undefined) return;
           const item = document.createElement('div');
           item.className = 'option-item';
+          // highlight if selected
+          if (state.selected === letter) {
+            item.classList.add('selected');
+          }
+          // if revealed, show correct / wrong
+          if (state.revealed) {
+            if (letter === q.correct) {
+              item.classList.add('correct-reveal');
+            } else if (state.selected === letter && letter !== q.correct) {
+              item.classList.add('wrong-reveal');
+            }
+          }
+
           item.innerHTML = `
             <span class="option-letter">${letter}</span>
             <span class="option-text">${optText}</span>
           `;
+
+          // click handler: only if not revealed
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (state.revealed) return; // already answered
+            // record selection
+            state.selected = letter;
+            state.revealed = true;
+            render();
+            updateStats();
+          });
+
           optionsDiv.appendChild(item);
         });
 
-        const badge = document.createElement('div');
-        badge.className = 'answer-badge';
-        badge.innerHTML = `✅ correct answer: <strong>${q.correct}</strong>`;
+        // feedback area
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-area';
+
+        if (state.revealed) {
+          const isCorrect = state.selected === q.correct;
+          const badge = document.createElement('span');
+          badge.className = `feedback-badge ${isCorrect ? 'correct' : 'wrong'}`;
+          if (isCorrect) {
+            badge.innerHTML = `✅ correct! <strong>${q.correct}</strong>`;
+          } else {
+            badge.innerHTML = `❌ you chose ${state.selected} · correct: <strong>${q.correct}</strong>`;
+          }
+          feedback.appendChild(badge);
+        } else {
+          const hint = document.createElement('span');
+          hint.className = 'feedback-badge';
+          hint.textContent = '💡 click an option to answer';
+          feedback.appendChild(hint);
+        }
+
+        // reset button for this question (only if revealed)
+        if (state.revealed) {
+          const resetBtn = document.createElement('button');
+          resetBtn.className = 'btn-small';
+          resetBtn.textContent = '↺ reset this';
+          resetBtn.style.marginLeft = 'auto';
+          resetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            state.selected = null;
+            state.revealed = false;
+            render();
+            updateStats();
+          });
+          feedback.appendChild(resetBtn);
+        }
 
         card.appendChild(header);
         card.appendChild(qText);
         card.appendChild(optionsDiv);
-        card.appendChild(badge);
+        card.appendChild(feedback);
         root.appendChild(card);
       });
+      updateStats();
     }
 
-    // state
-    let currentDeck = buildShuffledDeck();
+    // reset all answers
+    function resetAll() {
+      answerState = currentDeck.map(() => ({ selected: null, revealed: false }));
+      render();
+    }
 
-    function refreshQuiz() {
+    // reshuffle deck & reset
+    function reshuffleFull() {
       currentDeck = buildShuffledDeck();
-      render(currentDeck);
+      answerState = currentDeck.map(() => ({ selected: null, revealed: false }));
+      render();
     }
+
+    // event listeners
+    document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+    document.getElementById('reshuffleBtn').addEventListener('click', reshuffleFull);
 
     // initial render
-    render(currentDeck);
-
-    // reshuffle button
-    document.getElementById('reshuffleBtn').addEventListener('click', refreshQuiz);
+    render();
   })();
 </script>
 </body>
