@@ -22,7 +22,8 @@ async def game_theory_pa2():
 @app.get("/quiz")
 async def quiz(request: Request):
     try:
-        return templates.TemplateResponse("ml_quiz.html", {"request": request})
+        # Pass minimal data to avoid the tuple/dict error
+        return templates.TemplateResponse("ml_quiz.html", {"request": request, "dummy": None})
     except Exception as e:
         return HTMLResponse(f"Error rendering template: {str(e)}", status_code=500)
 
