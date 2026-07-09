@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import pygambit
 
@@ -9,6 +11,9 @@ app = FastAPI(title="Game Theory API", version="1.0")
 class GameData(BaseModel):
     matrix: list
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+templates = Jinja2Templates(directory="templates")
 
 @app.get("/game-theory-PA2")
 async def home():
@@ -16,9 +21,8 @@ async def home():
         return HTMLResponse(f.read())
 
 @app.get("/quiz")
-async def quiz():
-    with open("templates/ml_quiz.html", "r", encoding="utf-8") as f:
-        return HTMLResponse(f.read())
+async def quiz(request: Request):
+    return templates.TemplateResponse("ml_quiz.html", {"request": request})
 
 @app.get("/")
 async def home():
