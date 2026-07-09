@@ -1,4 +1,4 @@
-// questions.js - All 50 questions with explanations
+// static/questions.js
 const QUESTION_BANK = [
   {
     id: "NN1-001",
