@@ -6,14 +6,13 @@ from pydantic import BaseModel
 import pygambit
 
 app = FastAPI(title="Game Theory API", version="1.0")
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 class GameData(BaseModel):
     matrix: list
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
-templates = Jinja2Templates(directory="templates")
 
 @app.get("/game-theory-PA2")
 async def home():
@@ -86,3 +85,14 @@ async def game_solve(data: GameData):
         "number_of_equilibria": len(result.equilibria),
         "equilibria": equilibria
     }
+
+@app.get("/quiz-simple")
+async def quiz_simple():
+    try:
+        with open("templates/ml_quiz.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+        return HTMLResponse(html_content)
+    except FileNotFoundError as e:
+        return HTMLResponse(f"File not found: {e}", status_code=404)
+    except Exception as e:
+        return HTMLResponse(f"Error: {e}", status_code=500)
