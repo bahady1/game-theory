@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJCNX78D7F"></script>
-        <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+      <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJCNX78D7F"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'G-GJCNX78D7F');
-        </script>
+    gtag('config', 'G-GJCNX78D7F');
+    </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🧠 NN Practice · 50 shuffled questions</title>
+  <title>🧠 NN Practice · 10 random questions</title>
   <style>
     * {
       box-sizing: border-box;
@@ -158,6 +158,11 @@
     .feedback-area {
       margin-top: 1rem;
       display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .feedback-row {
+      display: flex;
       align-items: center;
       gap: 16px;
       flex-wrap: wrap;
@@ -191,6 +196,19 @@
       border-color: #b75858;
       color: #752a2a;
     }
+    .explanation-box {
+      background: #f3f8fe;
+      border-left: 4px solid #2b7a9e;
+      padding: 0.8rem 1.2rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      color: #1a4055;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .explanation-box strong {
+      color: #0b3f5a;
+    }
     .btn-reset {
       background: none;
       border: 1px solid #b5cfdf;
@@ -220,6 +238,21 @@
     .btn-small:hover {
       background: #d2e2ef;
     }
+    .btn-primary {
+      background: #1d5b78;
+      border: none;
+      padding: 0.5rem 2rem;
+      border-radius: 60px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.15s;
+    }
+    .btn-primary:hover {
+      background: #134a63;
+      transform: scale(1.02);
+    }
     .footer-note {
       margin-top: 2.5rem;
       color: #2b5d7a;
@@ -240,6 +273,13 @@
       font-weight: 500;
       color: #12445f;
     }
+    .batch-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 1rem 0 0.5rem;
+    }
     @media (max-width: 600px) {
       .quiz-container { padding: 1.2rem; }
       .q-text { font-size: 1rem; }
@@ -250,81 +290,32 @@
 <body>
 <div class="quiz-container" id="app">
   <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-    <h1>🧠 NN1 · practice</h1>
-    <span style="background: #e1edf6; border-radius: 60px; padding: 0.2rem 1.4rem; font-size: 0.8rem; color:#1c4b63;">shuffled · click to answer</span>
+    <h1>🧠 NN1 · practice (10 at a time)</h1>
+    <span style="background: #e1edf6; border-radius: 60px; padding: 0.2rem 1.4rem; font-size: 0.8rem; color:#1c4b63;">random batch</span>
   </header>
   <div class="subhead">
-    <span>⚡ select an option · see if you're right</span>
+    <span>⚡ 10 random questions · select an option to see explanation</span>
     <span style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap;">
       <button class="btn-small" id="resetAllBtn">↺ reset all</button>
-      <button class="btn-small" id="reshuffleBtn">🔀 reshuffle</button>
+      <button class="btn-small" id="reshuffleBtn">🔀 new batch</button>
     </span>
   </div>
 
   <div id="quizRoot"></div>
 
+  <div class="batch-controls">
+    <button class="btn-primary" id="nextBatchBtn">📚 Next 10 random questions</button>
+  </div>
+
   <div class="footer-note">
-    <span class="progress-stats" id="statsDisplay">✅ 0 / 50 answered</span>
-    <span style="color:#1b5470;">• correct answers hidden until you choose</span>
+    <span class="progress-stats" id="statsDisplay">✅ 0 / 10 answered</span>
+    <span style="color:#1b5470;">• explanations shown after each answer</span>
   </div>
 </div>
 
+<script src="questions.js"></script>
 <script>
   (function() {
-    // ---------- raw data (50 questions) ----------
-    const RAW_QUESTIONS = [
-      { id: "NN1-001", topic: "Machine learning definition", question: "Which statement best captures the standard experience-task-performance definition of machine learning?", options: { A: "A program learns if it stores more data than before.", B: "A program learns from experience E with respect to a task T and performance measure P if performance on T, measured by P, improves with E.", C: "A program learns if it can execute hand-written rules more quickly over time.", D: "A program learns if it can solve any task without examples or feedback." }, correct: "B" },
-      { id: "NN1-002", topic: "Machine learning paradigm", question: "In the usual paradigm-shift description of machine learning, what replaces writing all rules by hand?", options: { A: "The system infers rules or model parameters from data and desired outputs.", B: "The system ignores the data and searches directly for labels.", C: "The programmer writes a larger rule base before training.", D: "The system chooses random rules and keeps them fixed." }, correct: "A" },
-      { id: "NN1-003", topic: "Supervised learning", question: "A model is trained on images together with their class labels. Which learning setting is this?", options: { A: "Unsupervised learning", B: "Supervised learning", C: "Reinforcement learning", D: "Out-of-core learning" }, correct: "B" },
-      { id: "NN1-004", topic: "Unsupervised learning", question: "Which task is most naturally treated as an unsupervised learning problem?", options: { A: "Predicting house prices from labeled examples", B: "Grouping customers into similar clusters without preassigned group labels", C: "Training an agent to maximize reward in a game", D: "Computing the exact derivative of a known polynomial" }, correct: "B" },
-      { id: "NN1-005", topic: "Reinforcement learning", question: "What is the main objective of an agent in reinforcement learning?", options: { A: "To memorize all previously observed states", B: "To minimize the number of actions it can choose from", C: "To maximize expected cumulative reward through interaction with an environment", D: "To reproduce labels supplied for every state-action pair" }, correct: "C" },
-      { id: "NN1-006", topic: "Policy in reinforcement learning", question: "After successful reinforcement learning, what does the learned policy do?", options: { A: "It maps states to actions that are expected to be good for the task.", B: "It maps actions to random states for exploration only.", C: "It replaces the reward function with a classification loss.", D: "It stores the raw training images used by the agent." }, correct: "A" },
-      { id: "NN1-007", topic: "Batch vs online learning", question: "Which description best characterizes online learning?", options: { A: "The model is trained once on the complete data set and then never updated.", B: "The model is updated incrementally as individual examples or mini-batches arrive.", C: "The model can only be trained when no internet connection is available.", D: "The model uses only unlabeled data and never uses targets." }, correct: "B" },
-      { id: "NN1-008", topic: "Instance-based learning", question: "What is central to instance-based learning?", options: { A: "A similarity measure between new samples and stored examples", B: "A convolution kernel applied to every image", C: "A reward signal from an environment", D: "A validation set that is larger than the training set" }, correct: "A" },
-      { id: "NN1-009", topic: "Model-based learning", question: "In model-based learning, what is used for generalization to new data?", options: { A: "Only the closest stored training example", B: "A trained model with learned parameters", C: "A manually written list of all possible outputs", D: "The order in which the data was collected" }, correct: "B" },
-      { id: "NN1-010", topic: "Data challenges", question: "Which of the following is a typical data-related challenge in machine learning?", options: { A: "The activation function is non-linear", B: "The data is not representative of the real problem distribution", C: "The gradient is computed by the chain rule", D: "The model has a bias parameter" }, correct: "B" },
-      { id: "NN1-011", topic: "Overfitting", question: "A neural network performs very well on the training set but poorly on unseen data. What is the most likely problem?", options: { A: "Overfitting / high variance", B: "Underfitting / high bias", C: "The model has no parameters", D: "The problem must be unsupervised" }, correct: "A" },
-      { id: "NN1-012", topic: "Underfitting", question: "A model performs poorly both on the training set and on the validation set. Which diagnosis is most plausible?", options: { A: "The model is probably too simple or lacks useful features.", B: "The model has memorized the training data perfectly.", C: "The test set has been used too late.", D: "The labels are unnecessary for supervised learning." }, correct: "A" },
-      { id: "NN1-013", topic: "Accuracy on imbalanced data", question: "Why can accuracy be misleading for a highly imbalanced binary classification problem?", options: { A: "Accuracy cannot be computed for binary classification.", B: "A classifier that always predicts the majority class may achieve high accuracy while being useless for the minority class.", C: "Accuracy is always identical to recall.", D: "Accuracy requires a convolutional neural network." }, correct: "B" },
-      { id: "NN1-014", topic: "Test set", question: "What is the main purpose of a separate test set?", options: { A: "To update the model weights after every epoch", B: "To tune hyperparameters until the best configuration is found", C: "To estimate final performance on data not used for training or model selection", D: "To replace the training set when there is little data" }, correct: "C" },
-      { id: "NN1-015", topic: "Validation set", question: "During model development, what is a validation set commonly used for?", options: { A: "Choosing hyperparameters or comparing model variants", B: "Defining the labels for the entire data set", C: "Replacing the loss function during backpropagation", D: "Guaranteeing that the model has no bias" }, correct: "A" },
-      { id: "NN1-016", topic: "Categorical variables", question: "Why is one-hot encoding often preferred over integer encoding for nominal categories?", options: { A: "It forces an artificial order relation between categories.", B: "It avoids implying an ordinal relationship between unrelated categories.", C: "It removes the need for a training set.", D: "It makes every category numerically identical." }, correct: "B" },
-      { id: "NN1-017", topic: "Missing values", question: "Which strategy is a common way to handle missing numerical values?", options: { A: "Replace missing entries with a suitable statistic such as the median, when appropriate.", B: "Always replace missing entries with the class label.", C: "Set the learning rate to zero.", D: "Convert all numerical features into image pixels." }, correct: "A" },
-      { id: "NN1-018", topic: "Confusion matrix", question: "In a binary classifier, what is a false positive?", options: { A: "The model predicts positive, and the true class is negative.", B: "The model predicts negative, and the true class is positive.", C: "The model predicts positive, and the true class is positive.", D: "The model predicts negative, and the true class is negative." }, correct: "A" },
-      { id: "NN1-019", topic: "Precision", question: "Which formula defines precision in binary classification?", options: { A: "TP / (TP + FN)", B: "TN / (TN + FP)", C: "TP / (TP + FP)", D: "(TP + TN) / (TP + TN + FP + FN)" }, correct: "C" },
-      { id: "NN1-020", topic: "Recall", question: "Which formula defines recall in binary classification?", options: { A: "TP / (TP + FN)", B: "TP / (TP + FP)", C: "FP / (FP + TN)", D: "TN / (TN + FN)" }, correct: "A" },
-      { id: "NN1-021", topic: "F1 score", question: "What does the F1 score combine?", options: { A: "Learning rate and batch size", B: "Precision and recall", C: "Training loss and number of layers", D: "True negatives and validation loss only" }, correct: "B" },
-      { id: "NN1-022", topic: "Precision-recall tradeoff", question: "What usually happens when the decision threshold of a binary classifier is changed?", options: { A: "Precision and recall can change, often in opposite directions.", B: "The number of model parameters becomes zero.", C: "The training set is automatically enlarged.", D: "The classifier stops producing scores." }, correct: "A" },
-      { id: "NN1-023", topic: "ROC and AUC", question: "What is plotted on a standard ROC curve?", options: { A: "Training loss versus number of hidden layers", B: "True positive rate versus false positive rate", C: "Precision versus number of epochs", D: "Learning rate versus batch size" }, correct: "B" },
-      { id: "NN1-024", topic: "Linear regression", question: "In simple linear regression with model \\(y_{\\mathrm{pred}} = \\alpha + \\beta x\\), what is learned from the data?", options: { A: "The input values \\(x\\) themselves", B: "The parameters alpha and beta", C: "The number of classes in a CNN", D: "The one-hot encoding of the labels" }, correct: "B" },
-      { id: "NN1-025", topic: "Cost functions", question: "Why does minimizing mean squared error help fit a regression model?", options: { A: "It makes predictions close to target values according to a chosen error measure.", B: "It guarantees that every prediction is an integer class label.", C: "It removes all input features from the model.", D: "It prevents gradients from being computed." }, correct: "A" },
-      { id: "NN1-026", topic: "Sigmoid activation", question: "Which expression is the sigmoid activation function?", options: { A: "\\(g(z) = \\max(0, z)\\)", B: "\\(g(z) = 1 / (1 + \\exp(-z))\\)", C: "\\(g(z) = z^{-2}\\)", D: "\\(g(z) = \\exp(z) / z\\)" }, correct: "B" },
-      { id: "NN1-027", topic: "XOR and nonlinearity", question: "Why can a single linear decision boundary not solve the XOR classification problem?", options: { A: "The XOR labels are not linearly separable in the original two-dimensional input space.", B: "XOR has only one input variable.", C: "XOR has no labels.", D: "Linear models cannot have bias terms." }, correct: "A" },
-      { id: "NN1-028", topic: "Activation functions", question: "Why are non-linear activation functions essential in multilayer neural networks?", options: { A: "Without non-linearities, a stack of linear layers is still only a linear function.", B: "They remove the need for a loss function.", C: "They make all gradients exactly zero.", D: "They guarantee perfect performance on all data sets." }, correct: "A" },
-      { id: "NN1-029", topic: "Common activations", question: "Which list contains only common neural-network activation functions?", options: { A: "Sigmoid, tanh, ReLU, leaky ReLU", B: "Mean, median, variance, standard deviation", C: "Precision, recall, F1, AUC", D: "Train, validation, test, batch" }, correct: "A" },
-      { id: "NN1-030", topic: "Neural network training", question: "Which sequence best describes one standard training iteration for a neural network?", options: { A: "Forward pass, compute loss, backpropagate gradients, update weights", B: "Update weights, erase labels, compute ROC, remove the loss", C: "Cluster data, one-hot encode the optimizer, freeze all parameters, stop", D: "Compute test accuracy, choose a new data set, delete gradients, increase bias manually" }, correct: "A" },
-      { id: "NN1-031", topic: "Backpropagation", question: "Which mathematical rule is implemented by backpropagation?", options: { A: "The chain rule for derivatives", B: "Bayes rule only", C: "The triangle inequality", D: "The rule of three" }, correct: "A" },
-      { id: "NN1-032", topic: "Computational graphs", question: "Why do deep learning frameworks use computational graphs?", options: { A: "To represent operations and dependencies so that gradients can be computed automatically", B: "To remove all non-linear functions from the model", C: "To replace training data with diagrams", D: "To make all models unsupervised" }, correct: "A" },
-      { id: "NN1-033", topic: "Learning rate", question: "What is the role of the learning rate in gradient descent?", options: { A: "It determines the step size of parameter updates.", B: "It determines the number of classes in the data.", C: "It is the same as the validation accuracy.", D: "It specifies the image width after convolution." }, correct: "A" },
-      { id: "NN1-034", topic: "Learning rate problems", question: "What can happen if the learning rate is chosen much too large?", options: { A: "Training may overshoot minima and become unstable.", B: "The model must become linear.", C: "The data automatically becomes balanced.", D: "All missing values are imputed." }, correct: "A" },
-      { id: "NN1-035", topic: "Regularization", question: "What is the purpose of regularization in neural-network training?", options: { A: "To reduce overfitting by constraining the model, for example by penalizing large weights or using dropout", B: "To force the model to achieve zero training loss at all costs", C: "To convert every problem into reinforcement learning", D: "To make the validation set identical to the training set" }, correct: "A" },
-      { id: "NN1-036", topic: "Dropout", question: "What is the basic idea of dropout regularization during training?", options: { A: "Randomly deactivate some units so the network cannot rely too strongly on specific activations.", B: "Remove all training examples with missing values.", C: "Set the learning rate permanently to zero.", D: "Replace every convolution with average pooling." }, correct: "A" },
-      { id: "NN1-037", topic: "Convolution output size", question: "For a square input of size n x n, filter size f x f, padding p, and stride 1, what is the spatial output size of a convolution?", options: { A: "\\((n + 2p - f + 1) \\times (n + 2p - f + 1)\\)", B: "\\((n - 2p + f) \\times (n - 2p + f)\\)", C: "\\((n f p) \\times (n f p)\\)", D: "\\((p + f - 1) \\times (p + f - 1)\\)" }, correct: "A" },
-      { id: "NN1-038", topic: "Edge-detection kernels", question: "Which 3x3 kernel is a typical vertical edge detector of the kind discussed in class?", options: { A: "[[1, 0, -1], [1, 0, -1], [1, 0, -1]]", B: "[[1, 1, 1], [0, 0, 0], [-1, -1, -1]]", C: "[[0, 0, 0], [0, 1, 0], [0, 0, 0]]", D: "[[1, 1, 1], [1, 1, 1], [1, 1, 1]]" }, correct: "A" },
-      { id: "NN1-039", topic: "Padding", question: "Why is padding commonly used in convolutional networks?", options: { A: "To control spatial shrinking and allow edge pixels to contribute more fully to convolutions", B: "To remove all bias terms from the network", C: "To make the image labels continuous", D: "To turn a recurrent network into a dense network" }, correct: "A" },
-      { id: "NN1-040", topic: "Valid and same convolution", question: "For stride 1 and odd filter size f, what padding p gives same convolution for an n x n input?", options: { A: "\\(p = 0\\)", B: "\\(p = (f - 1) / 2\\)", C: "\\(p = n + f\\)", D: "\\(p = f^{-2}\\)" }, correct: "B" },
-      { id: "NN1-041", topic: "Pooling layers", question: "Which statement about pooling layers is correct?", options: { A: "Max pooling selects the largest value in each pooling window.", B: "Pooling layers usually learn one weight for every pixel in the input image.", C: "Average pooling always increases the spatial resolution.", D: "Pooling is identical to one-hot encoding." }, correct: "A" },
-      { id: "NN1-042", topic: "CNN motivation", question: "Why are CNNs usually better suited than fully connected networks for image tasks?", options: { A: "They learn local filters that reuse weights across spatial positions, reducing parameters and exploiting image structure.", B: "They require no training data.", C: "They can only process one-dimensional sequences.", D: "They avoid all non-linear activations." }, correct: "A" },
-      { id: "NN1-043", topic: "Dense network parameter count", question: "A dense network has 3 inputs, one hidden layer with 2 neurons, and one output neuron. Including biases, how many trainable parameters does it have?", options: { A: "6", B: "8", C: "11", D: "12" }, correct: "C" },
-      { id: "NN1-044", topic: "RNN neuron", question: "How does a recurrent neuron differ from a neuron in a standard multilayer perceptron?", options: { A: "It also receives information from the previous time step.", B: "It has no weights.", C: "It can only be used for images.", D: "It does not use activation functions." }, correct: "A" },
-      { id: "NN1-045", topic: "Unrolling RNNs", question: "What does it mean to unroll a recurrent network in time?", options: { A: "Represent the repeated recurrent computation as a sequence of linked copies across time steps.", B: "Remove all time steps from the data.", C: "Replace recurrence with one-hot encoding.", D: "Train a CNN with larger filters." }, correct: "A" },
-      { id: "NN1-046", topic: "RNN training", question: "Which method is used to train recurrent neural networks through time?", options: { A: "Backpropagation through time", B: "K-means through time", C: "Padding through time", D: "ROC through time" }, correct: "A" },
-      { id: "NN1-047", topic: "LSTM inputs and state", question: "Compared with a simple recurrent neuron, what additional state is central to an LSTM?", options: { A: "A long-term cell state in addition to the hidden state", B: "A convolution filter with fixed values", C: "A confusion matrix stored at each time step", D: "A one-hot encoded class label used as a weight matrix" }, correct: "A" },
-      { id: "NN1-048", topic: "LSTM gates", question: "Which set lists the standard gates of an LSTM cell?", options: { A: "Forget gate, update/input gate, output gate", B: "Pooling gate, padding gate, stride gate", C: "Precision gate, recall gate, F1 gate", D: "Train gate, validation gate, test gate" }, correct: "A" },
-      { id: "NN1-049", topic: "Vanishing gradients", question: "Which problem motivated the development and use of LSTMs for sequence modeling?", options: { A: "Vanishing gradients in long unrolled recurrent networks", B: "The impossibility of using labels in supervised learning", C: "The lack of any activation function in CNNs", D: "The fact that precision and recall are always equal" }, correct: "A" },
-      { id: "NN1-050", topic: "RNN sequence tasks", question: "For named entity recognition with an RNN, which architecture is most appropriate?", options: { A: "Sequence-to-sequence with one output decision per input token", B: "Sequence-to-vector with only one output for the whole sentence", C: "Image-to-image convolution without time steps", D: "Reinforcement learning with no input tokens" }, correct: "A" }
-    ];
-
     // ---------- helpers ----------
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -334,7 +325,7 @@
       return arr;
     }
 
-    // shuffle options inside a question, return new object, keep correct mapping
+    // shuffle options inside a question, return new object
     function shuffleOptions(q) {
       const entries = Object.entries(q.options);
       const shuffled = shuffleArray([...entries]);
@@ -349,37 +340,34 @@
       return { ...q, options: newOpts, correct: correctLetter };
     }
 
-    // build full shuffled deck: question order + options inside
-    function buildShuffledDeck() {
-      const deck = RAW_QUESTIONS.map(q => ({ ...q, options: { ...q.options } }));
-      shuffleArray(deck);
-      return deck.map(q => shuffleOptions(q));
+    // pick 10 random questions from the full deck, shuffle options inside
+    function pickRandomBatch(size = 10) {
+      const shuffled = shuffleArray([...QUESTION_BANK]);
+      const selected = shuffled.slice(0, size);
+      return selected.map(q => shuffleOptions({ ...q, options: { ...q.options } }));
     }
 
     // ----- state -----
-    let currentDeck = buildShuffledDeck();
-    // answerState: map index -> { selected: 'A'|null, revealed: false }
-    let answerState = currentDeck.map(() => ({ selected: null, revealed: false }));
+    let currentBatch = pickRandomBatch(10);
+    let answerState = currentBatch.map(() => ({ selected: null, revealed: false }));
 
     // DOM refs
     const root = document.getElementById('quizRoot');
     const statsDisplay = document.getElementById('statsDisplay');
 
-    // update stats
     function updateStats() {
       const answered = answerState.filter(s => s.selected !== null).length;
-      statsDisplay.textContent = `✅ ${answered} / 50 answered`;
+      const total = answerState.length;
+      statsDisplay.textContent = `✅ ${answered} / ${total} answered`;
     }
 
-    // render everything
     function render() {
       root.innerHTML = '';
-      currentDeck.forEach((q, idx) => {
+      currentBatch.forEach((q, idx) => {
         const state = answerState[idx];
         const card = document.createElement('div');
         card.className = 'question-card';
 
-        // header
         const header = document.createElement('div');
         header.className = 'q-header';
         header.innerHTML = `
@@ -388,12 +376,10 @@
           <span style="margin-left: auto; color: #2d657d; font-size:0.8rem; background:#e7f0f7; padding:0.1rem 1rem; border-radius:30px;">#${idx+1}</span>
         `;
 
-        // question text
         const qText = document.createElement('div');
         qText.className = 'q-text';
         qText.textContent = q.question;
 
-        // options
         const optionsDiv = document.createElement('div');
         optionsDiv.className = 'options-grid';
         const letters = ['A', 'B', 'C', 'D'];
@@ -403,11 +389,9 @@
           if (optText === undefined) return;
           const item = document.createElement('div');
           item.className = 'option-item';
-          // highlight if selected
           if (state.selected === letter) {
             item.classList.add('selected');
           }
-          // if revealed, show correct / wrong
           if (state.revealed) {
             if (letter === q.correct) {
               item.classList.add('correct-reveal');
@@ -421,11 +405,9 @@
             <span class="option-text">${optText}</span>
           `;
 
-          // click handler: only if not revealed
           item.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (state.revealed) return; // already answered
-            // record selection
+            if (state.revealed) return;
             state.selected = letter;
             state.revealed = true;
             render();
@@ -435,7 +417,6 @@
           optionsDiv.appendChild(item);
         });
 
-        // feedback area
         const feedback = document.createElement('div');
         feedback.className = 'feedback-area';
 
@@ -449,15 +430,13 @@
             badge.innerHTML = `❌ you chose ${state.selected} · correct: <strong>${q.correct}</strong>`;
           }
           feedback.appendChild(badge);
-        } else {
-          const hint = document.createElement('span');
-          hint.className = 'feedback-badge';
-          hint.textContent = '💡 click an option to answer';
-          feedback.appendChild(hint);
-        }
 
-        // reset button for this question (only if revealed)
-        if (state.revealed) {
+          // explanation
+          const expBox = document.createElement('div');
+          expBox.className = 'explanation-box';
+          expBox.innerHTML = `<strong>💡 Explanation:</strong> ${q.explanation}`;
+          feedback.appendChild(expBox);
+
           const resetBtn = document.createElement('button');
           resetBtn.className = 'btn-small';
           resetBtn.textContent = '↺ reset this';
@@ -470,6 +449,11 @@
             updateStats();
           });
           feedback.appendChild(resetBtn);
+        } else {
+          const hint = document.createElement('span');
+          hint.className = 'feedback-badge';
+          hint.textContent = '💡 click an option to answer';
+          feedback.appendChild(hint);
         }
 
         card.appendChild(header);
@@ -481,22 +465,21 @@
       updateStats();
     }
 
-    // reset all answers
     function resetAll() {
-      answerState = currentDeck.map(() => ({ selected: null, revealed: false }));
+      answerState = currentBatch.map(() => ({ selected: null, revealed: false }));
       render();
     }
 
-    // reshuffle deck & reset
-    function reshuffleFull() {
-      currentDeck = buildShuffledDeck();
-      answerState = currentDeck.map(() => ({ selected: null, revealed: false }));
+    function loadNewBatch() {
+      currentBatch = pickRandomBatch(10);
+      answerState = currentBatch.map(() => ({ selected: null, revealed: false }));
       render();
     }
 
     // event listeners
     document.getElementById('resetAllBtn').addEventListener('click', resetAll);
-    document.getElementById('reshuffleBtn').addEventListener('click', reshuffleFull);
+    document.getElementById('reshuffleBtn').addEventListener('click', loadNewBatch);
+    document.getElementById('nextBatchBtn').addEventListener('click', loadNewBatch);
 
     // initial render
     render();
